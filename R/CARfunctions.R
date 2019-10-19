@@ -41,5 +41,67 @@ psd=function(x,p1=3/4,best = 0,tr = NULL,n.trt)
     s=s+1
   }
   tr
-  }
+}
 
+#' A function to calculate G in the Pocock Design and return a vector of p
+#'
+#' This function is not generally used. It is used in the calculation of the treatment assignments in psd
+#' @param x x is the vector of deltas in Pocock's design
+#' @param p1 = 3/4
+
+g=function(x,p1=3/4,n.trt)
+{
+  p = NULL
+  best = which(x == min(x))
+  if (length(best) > 1) {
+    p = rep(1/n.trt,n.trt)
+  } else {
+    p = rep(1-p1/(n.trt-1),n.trt)
+    p[best] = 3/4
+
+  }
+  p
+
+}
+#' spbd Function
+#'
+#' Function to determine treatment assignments in SPB Design
+#' @param x X vector of covariate values, ranging from 0 to total number of factor levels
+#' @param n Total sample size
+#' @param m The number of blocks
+#' @export
+#' @examples
+#' spbd()
+
+spbd=function(x,n,m=4)
+{tr=rep(NA,n)
+i=1
+while(i<=m)
+{
+  tr[x==i]=pbr(length(x[x==i]))
+  i=i+1
+}
+return(tr)
+}
+#' PBR Function
+#'
+#' This function is not generally used. This is used in spbd to determine treatment assignments
+#' @param n Total n size
+#' @param block.size This is the number of subjects in each block
+
+
+
+
+pbr=function(n,block.size=4) #block.size is the number of subjects in each block, assuming fixed
+{
+  block.num=ceiling(n/block.size)
+  cards=NULL
+  i=1
+  while(i<=block.num)
+  {
+    cards=c(cards,sample(cbind(rep(1,block.size/2),rep(0,block.size/2)),block.size))
+    i=i+1
+  }
+  cards=cards[1:n]
+  return(cards)
+}
