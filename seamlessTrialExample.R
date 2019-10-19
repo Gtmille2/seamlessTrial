@@ -1,4 +1,7 @@
 ### Example file for seamlessTrials package
+### This package corresponds to paper II
+### A Confirmatory seamless phase II/phase III clinical trial design incorporating short term endpoint information
+
 library(seamlessTrials)
 set.seed(101010)
 n.looks = 5 #There are 5 planned analyses in this trial

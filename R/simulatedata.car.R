@@ -14,7 +14,7 @@
 #' @export
 
 
-simulatedata.car  <- function(mean.s,mean.t,sigma0 = 1,sigma=1,rho = .5, tau1 = 1, tau2 = 1,treat,covValues,data=NULL)
+simulatedata.car  <- function(mean.s,mean.t,sigma0 = 1,sigma=1,rho = .5, tau1 = 1, tau2 = 1,treat,covValues,data=NULL,inspection)
   # simulate multiple treatment groups
 {
 

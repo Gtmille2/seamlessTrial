@@ -31,6 +31,7 @@ simulatetrials <- function(n1=20, N1=200, N=500, n.trt=2, mean.s=rep(0,3), mean.
 
   for (sim in seq(1,nsim))
   {
+
     data = simulatedata.car(mean.s,mean.t, N,sigma0,sigma,p1,p2,rho,design = "Pocock",tau1 = tau1,tau2 = tau2)
 
     # using short-term and long-term endpoints

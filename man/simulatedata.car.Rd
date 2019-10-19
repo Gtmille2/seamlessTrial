@@ -5,7 +5,7 @@
 \title{Simulate Data For CAR Function}
 \usage{
 simulatedata.car(mean.s, mean.t, sigma0 = 1, sigma = 1, rho = 0.5,
-  tau1 = 1, tau2 = 1, treat, covValues, data = NULL)
+  tau1 = 1, tau2 = 1, treat, covValues, data = NULL, inspection)
 }
 \arguments{
 \item{mean.s}{Mean of the short term response}
