@@ -12,39 +12,71 @@
 #' @param covValues covValues is the dummy variable matrix from the covariate values
 #' @param data Is the data from the previous analysis if applicable. The default is NULL
 #' @export
-
-
 simulatedata.car  <- function(mean.s,mean.t,sigma0 = 1,sigma=1,rho = .5, tau1 = 1, tau2 = 1,treat,covValues,data=NULL,inspection)
   # simulate multiple treatment groups
 {
-
+  prop = trialprogress[inspection]
   trts = unique(treat)
   trts = trts[order(trts)]
   if (is.null(data)) keeps = rep(TRUE, nrow(covValues)) else keeps = data$treat %in% trts
-  if (is.null(data)) covValues = covValues else covValues = covValues[(length(data$treat)+1):nrow(covValues),]
+  keepdata = data[keeps,]
+  nas = is.na(data[keeps,]$t)
+  if(!is.null(data)) covkeep  = covValues[1:length(data$s),][keeps,] else covkeep = NULL
+  if (!is.null(data)) oldcov = covValues[1:length(data$s),][keeps,][nas, ] else oldcov = NULL
+  if (is.null(data)) covnew = covValues else covnew =  covValues[(length(data$treat)+1):nrow(covValues),]
+  covValues <<- rbind(covkeep,covnew)
+  term1 = sum(!is.na(data[keeps,]$t))
+  term2 = prop*length(treat)
+  if(!is.null(data)) p = nrow(data[keeps,])/length(treat) else p = 0
+  q = 1-p
+  oldupdate = round(p*(term2-term1))
+  newupdate = round(q*(term2-term1))
+
+
   n.trt = length(unique(treat))-1
   if (is.null(data)) n.s = table(treat) else n.s = table(treat)- table(data[data$treat %in% trts,]$treat)
-  n.t = ceiling(n.s/2)
+  #Distributing the new available long-term endpoints between the previous group and the incoming group
+  # p = (length(treat) - sum(!is.na(data$t)))*(length(data$s)/length(treat)) # The number of patients from the old data that will have their long-term endpoint updated
+  # q = (length(treat) - sum(!is.na(data$t)))*(length(data$s)/length(treat)) # The number of patients from the new data that will have long-term endpoints
+  n.t = round(n.s*(newupdate/sum(n.s)))
+  n.update = table(data[keeps,]$treat) - table(na.omit(data[keeps,])$treat)
+  n.update = round(n.update*(oldupdate/sum(n.update)))
   diff = n.s-n.t
   mean.full.s = rep(rep(0,n.trt+1),n.s)
   mean.full.t = rep(rep(0,n.trt+1),n.s)
   treat = tail(treat,sum(n.s))
+  oldtreat = keepdata[is.na(keepdata$t),]$treat
+  olddiff = table(oldtreat)-n.update
+  if (sum(olddiff) < 0) olddiff[1:length(olddiff)] = 0
+  mean.new.t = rep(0,length(oldtreat))
+
   for (trt in trts)
   {
     mean.full.t[treat==trt][1:n.s[which(trts==trt)]] = c(rep(mean.t[which(trts==trt)], n.t[which(trts==trt)]),rep(NA,diff[which(trts==trt)]))
     mean.full.s[treat==trt] = rep(mean.s[which(trts==trt)], n.s[which(trts==trt)])
+    if(!is.null(data)) mean.new.t[oldtreat==trt] = c(rep(mean.t[which(trts==trt)],n.update[which(trts==trt)]) , rep(NA,olddiff[which(trts==trt)]))
  }
-
+  ### Have to add on
   mean.full = cbind(mean.full.s,mean.full.t)
-
+  update.full = cbind(mean.new.t, rep(0,length(mean.new.t)))
   # simulate error about mean zero then add on treatment effects
   mean = c(0,0)
   var = c(sigma0^2,rho*sigma0*sigma,rho*sigma0*sigma,sigma^2)
   dim(var) = c(2,2)
   full.error = mvtnorm::rmvnorm(nrow(mean.full),mean,var)
-  covmatrix = matrix(c(tau1*covValues[,1],tau2*covValues[,2]),ncol=2)
+  if (!is.null(data)) update.error = mvtnorm::rmvnorm(nrow(update.full),mean,var) else update.error = NULL
+  covsum = rowSums(matrix(c(tau1*covnew[,1],tau2*covnew[,2]),ncol=2))
+  covmatrix = cbind(covsum, covsum)
+  updatecovsum = rowSums(matrix(c(tau1*oldcov[,1],tau2*oldcov[,2]),ncol=2))
+  updatecovmat = cbind(updatecovsum, updatecovsum)
+  updatedata = update.error + mean.new.t + updatecovmat
+  olds = keepdata[is.na(keepdata$t),]$s
+  updatedata = data.frame(s = olds, t = updatedata[,2],treat=oldtreat)
+  olddata = na.omit(keepdata)
+  updatefull = rbind(olddata, updatedata)
+
   full.data  = full.error + mean.full + covmatrix
   new.data = data.frame(s=full.data[,1],t=full.data[,2],treat=treat)
-  rbind(data[keeps,],new.data)
+  test = rbind(updatefull,new.data)
 }
 

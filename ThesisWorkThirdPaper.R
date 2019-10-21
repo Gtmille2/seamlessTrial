@@ -3,7 +3,7 @@
 
 library(seamlessTrials)
 set.seed(101010)
-n.looks = 5 #There are 5 planned analyses in this trial
+n.looks = 2 #There are 5 planned analyses in this trial
 alpha.star.u=c(0.001,0.010,0.019,0.024,0.025) # Upper alpha levels based on spending function
 alpha.star.l=c(0.185,0.733,0.933,0.973,0.975) # Lower alpha levels based on spending function
 mean.s = c(0,0,0) #The mean value for the short-term endpoint for the two treatments and control
