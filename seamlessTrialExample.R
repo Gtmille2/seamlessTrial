@@ -24,6 +24,8 @@ table(treat)
 look = 1
 data = simulatedata.car(mean.s = c(0,0,0), mean.t = c(0,0,0), sigma = 1, sigma0 = 1, rho = 0.5, tau1 = 1, tau2 = 1, treat, covValues,inspection = look)
 
+
+
 #Calculating test statistics z & v for this data, and selecting the best treatment
 z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
 z = z.v[1:look,1]
@@ -48,6 +50,13 @@ z = z.v[1:look,1] # Retrieving the Z statistic
 v = z.v[1:look,2] # Retrieving the V statistic
 get.boundaries(n.looks = look,v = v, k = c(2,rep(1,look-1)),alpha.star.u = alpha.star.u, alpha.star.l = alpha.star.l) # Calculating stopping boundaries at this look
 z.v
+
+look = 3
+covValuesNew = genCovValues(p=c(0.5,0.5),N=100)
+covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
+treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) # Assigning new treatment values
+data = simulatedata.car(mean.s=c(0,0,0),mean.t=c(0,0,0),sigma = 1,sigma0=1,rho = 0.5, tau1 = 1,tau2 = 1,treat,covValues,data = data,inspection = look) #Simulating the new patients data
+
 for ( look in 3:n.looks) {
 
   covValuesNew = genCovValues(p=c(0.5,0.5),N=100)

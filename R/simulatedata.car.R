@@ -28,9 +28,13 @@ simulatedata.car  <- function(mean.s,mean.t,sigma0 = 1,sigma=1,rho = .5, tau1 = 
   term1 = sum(!is.na(data[keeps,]$t))
   term2 = prop*length(treat)
   if(!is.null(data)) p = nrow(data[keeps,])/length(treat) else p = 0
-  q = 1-p
-  oldupdate = round(p*(term2-term1))
-  newupdate = round(q*(term2-term1))
+
+  if (!is.null(data)) oldupdate = round(prop*nrow(data[keeps,])) - term1 else oldupdate = 0
+
+  # oldupdate = old -
+  if (!is.null(data)) newupdate = (prop*(length(treat)-nrow(data[keeps,]))) else newupdate = length(treat)*prop
+  # oldupdate = round(p*(term2-term1))
+  # newupdate = round(q*(term2-term1))
 
 
   n.trt = length(unique(treat))-1
