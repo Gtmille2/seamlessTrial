@@ -142,4 +142,28 @@ pbr=function(n,block.size=12,n.trt,trts) #block.size is the number of subjects i
   return(cards)
 }
 
+nocar = function(covValues, best = 0, tr = NULL, n.trt) {
 
+  if (best == 0) trts = seq(0,n.trt) else trts = c(0,best)
+  if (is.null(tr)) keeps = rep(TRUE,nrow(x)) else keeps = c(tr %in% trts,rep(TRUE,nrow(x)-length(tr)))
+  # if (is.null(tr)) arrival = as.matrix(ade4::acm.disjonctif(x)) else arrival = as.matrix(ade4::acm.disjonctif(x[keeps,]))
+  # arrival = as.matrix(ade4::acm.disjonctif(x))
+  # weight = rep(1,ncol(arrival))
+  s = length(tr[tr %in% trts]) + 1
+  n.trt = length(trts)
+  N = nrow(arrival)
+  # base = matrix(rep(0,n.trt*ncol(arrival)),ncol=ncol(arrival))
+  # for ( i in 1:length(trts)) base[i,] = colSums(arrival[which(tr[tr %in% trts]==trts[i]),])
+  if (is.null(tr)) tr=rep(NA,N) else tr = tr[keeps]
+  # out = list()
+  # trin = which(trts==trts)
+  delts = rep(0,(n.trt))
+  while(s<=N)
+  {
+    tr[s] = sample(trts, 1,1/(length(trts)), replace=TRUE)
+    s=s+1
+  }
+
+
+  tr
+}
