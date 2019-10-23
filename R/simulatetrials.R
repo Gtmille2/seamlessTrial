@@ -19,11 +19,13 @@
 simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.0, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
 {
   n.looks = 2 #There are 2 planned analyses in this trial
+  alpha.star.u <<- c(0.0,0.025)
+  alpha.star.l <<- c(0,0.975)
   if (is.null(mean.s)) mean.s = rep(0,n.trt+1)
   if (is.null(mean.t)) mean.t = rep(0,n.trt+1)
   selected=rep(0,nsim)
   reject = rep(0,nsim)
-  trialprogress = seq(1,n.looks)/n.looks
+  trialprogress <<- seq(1,n.looks)/n.looks
   for (sim in seq(1,nsim)) {
 
   look = 1
