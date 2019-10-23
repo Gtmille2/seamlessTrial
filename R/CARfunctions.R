@@ -33,7 +33,8 @@ psd=function(x,p1=3/4,best = 0,tr = NULL,n.trt)
 
       inc = base
       inc[i,] = base[i,] + t(arrival[s,])
-      delts[i]=t(arrival[s,])%*%(Rfast::colrange(inc)*weight)
+      # delts[i]=t(arrival[s,])%*%(Rfast::colrange(inc)*weight)
+      delts[i]=t(arrival[s,])%*%((do.call(pmax,lapply(seq_len(nrow(inc)),function(j) inc[j,])) - do.call(pmin,lapply(seq_len(nrow(inc)),function(i) inc[i,])))*weight)
     }
     p=g(delts,p1,n.trt)
     tr[s] = sample(trts,1,p,replace=TRUE)
@@ -141,17 +142,21 @@ pbr=function(n,block.size=12,n.trt,trts) #block.size is the number of subjects i
 
   return(cards)
 }
-
+#' No CAR Function
+#'
+#' This function is to randomally allocation treatments
+#' @param covValues covValues is a matrix of covariate values, ranging from 0 to total number of factor levels
+#' @param best best is the best treatment after the first run
+#' @param tr Tr is vector of treatment assignments from the previous run if applicable
+#' @param n.trt n.trt is the number of treatments used in the analysis. Only applicable before the first analysis
+#' @export
 nocar = function(covValues, best = 0, tr = NULL, n.trt) {
 
   if (best == 0) trts = seq(0,n.trt) else trts = c(0,best)
-  if (is.null(tr)) keeps = rep(TRUE,nrow(x)) else keeps = c(tr %in% trts,rep(TRUE,nrow(x)-length(tr)))
-  # if (is.null(tr)) arrival = as.matrix(ade4::acm.disjonctif(x)) else arrival = as.matrix(ade4::acm.disjonctif(x[keeps,]))
-  # arrival = as.matrix(ade4::acm.disjonctif(x))
-  # weight = rep(1,ncol(arrival))
+  if (is.null(tr)) keeps = rep(TRUE,nrow(covValues)) else keeps = c(tr %in% trts,rep(TRUE,nrow(covValues)-length(tr)))
   s = length(tr[tr %in% trts]) + 1
   n.trt = length(trts)
-  N = nrow(arrival)
+  N = nrow(covValues)
   # base = matrix(rep(0,n.trt*ncol(arrival)),ncol=ncol(arrival))
   # for ( i in 1:length(trts)) base[i,] = colSums(arrival[which(tr[tr %in% trts]==trts[i]),])
   if (is.null(tr)) tr=rep(NA,N) else tr = tr[keeps]

@@ -13,7 +13,7 @@ sigma = 1
 rho = 0.5
 trialprogress = seq(1,n.looks)/n.looks
 #Generating sample covariate values
-simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=rep(0,n.trt+1), mean.t=rep(0,n.trt+1), p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.0, nsim=1000, design = "SBPD",tau1 = 1,tau2 = 1)
+simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=rep(0,n.trt+1), mean.t=rep(0,n.trt+1), p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.0, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
 {
 
   selected=rep(0,nsim)
@@ -44,6 +44,7 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=rep(0,n.trt+1), mean.t
     covValuesNew = genCovValues(p=c(0.5,0.5),N=N-N1)
     covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
     if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt) # Assigning new treatment values
+    # print(TRUE)
     data = simulatedata.car(mean.s=rep(0,n.trt+1),rep(0,n.trt+1),sigma = 1,sigma0=1,rho = 0.5, tau1 = 1,tau2 = 1,treat,covValues,data,inspection = look) #Simulating the new patients data
 
     #Calculating test statistics z & v for this data at the second look.
@@ -72,7 +73,7 @@ nsim = 100
 allsims = NULL
 ###Under null hypothesis that all treatment effects are equal
 ptm = proc.time()
-reject = simulatetrials(N1 = 200, N = 500, n.trt = n.trt, mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock", tau1= 1,tau2 = 1)
+reject = simulatetrials(N1 = 200, N = 500, n.trt = n.trt, mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 100, design = "Pocock",tau1= 1,tau2 = 1)
 proc.time() - ptm
 
 allsims = cbind(allsims, reject)

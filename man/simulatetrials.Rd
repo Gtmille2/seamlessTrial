@@ -10,8 +10,6 @@ simulatetrials(n1 = 20, N1 = 200, N = 500, n.trt = 2,
   design = "Pocock", tau1, tau2)
 }
 \arguments{
-\item{n1}{Number of patients with primary endpoint available at first analysis}
-
 \item{N1}{Number of patients with secondary endpoint available at first analysis}
 
 \item{N}{The total number of patients in the trial}
@@ -34,10 +32,12 @@ simulatetrials(n1 = 20, N1 = 200, N = 500, n.trt = 2,
 
 \item{nsim}{The number of simulation runs. The default is 1000}
 
-\item{save.boundary}{The boundaries that satisfy the spending funciton}
-
 \item{design}{The chosen covariate adaptive randomization procedure. Default is Pocock's design}
+
+\item{tau1}{The chosen covariate adaptive randomization procedure. Default is Pocock's design}
+
+\item{tau2}{The chosen covariate adaptive randomization procedure. Default is Pocock's design}
 }
 \description{
-Simulates 2 look trial and calculates the overall type I error rate, and power.
+Simulates 2 look trial and calculates the overall type I error rate.
 }
