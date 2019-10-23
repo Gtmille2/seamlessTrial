@@ -4,10 +4,9 @@
 \alias{simulatetrials}
 \title{Simulate trials function}
 \usage{
-simulatetrials(n1 = 20, N1 = 200, N = 500, n.trt = 2,
-  mean.s = rep(0, 3), mean.t = rep(0, 3), p1 = ps[i, 1], p2 = ps[i,
-  2], sigma0 = 1, sigma = 1, rho = 0, nsim = 1000, save.boundary,
-  design = "Pocock", tau1, tau2)
+simulatetrials(N1 = 200, N = 500, n.trt = 3, mean.s = NULL,
+  mean.t = NULL, p1 = 0.5, p2 = 0.5, sigma0 = 1, sigma = 1,
+  rho = 0, nsim = 1000, design = "Pocock", tau1 = 1, tau2 = 1)
 }
 \arguments{
 \item{N1}{Number of patients with secondary endpoint available at first analysis}

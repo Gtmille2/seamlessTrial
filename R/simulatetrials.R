@@ -16,20 +16,13 @@
 #' @param tau1 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @param tau2 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @export
-simulatetrials <- function(n1=20, N1=200, N=500, n.trt=2, mean.s=rep(0,3), mean.t=rep(0,3), p1 = ps[i,1], p2 = ps[i,2], sigma0=1, sigma=1, rho=0.0, nsim=1000, save.boundary, design = "Pocock",tau1,tau2)
+simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.0, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
 {
-
-
-  library(seamlessTrials)
-  set.seed(101010)
-  n.looks = 2 #There are 5 planned analyses in this trial
-  alpha.star.u=c(0.001,0.010,0.019,0.024,0.025) # Upper alpha levels based on spending function
-  alpha.star.l=c(0.185,0.733,0.933,0.973,0.975) # Lower alpha levels based on spending function
-  mean.s = c(0,0,0) #The mean value for the short-term endpoint for the two treatments and control
-  mean.t = c(0,0,0) #The mean value for the long-term ednpoint for the two treatments and control
-  sigma0 = 1
-  sigma = 1
-  rho = 0.5
+  n.looks = 2 #There are 2 planned analyses in this trial
+  if (is.null(mean.s)) mean.s = rep(0,n.trt+1)
+  if (is.null(mean.t)) mean.t = rep(0,n.trt+1)
+  selected=rep(0,nsim)
+  reject = rep(0,nsim)
   trialprogress = seq(1,n.looks)/n.looks
   for (sim in seq(1,nsim)) {
 
