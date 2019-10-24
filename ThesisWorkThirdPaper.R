@@ -88,4 +88,47 @@ reject = simulatetrials(N1 = 200, N = 500, n.trt = n.trt, mean.s = rep(0,(n.trt+
 proc.time() - ptm
 
 reject = simulatetrials(N1 = 300, N = 500, n.trt = n.trt, mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "SPBD", tau1= 1,tau2 = 1)
+###Using boundary.values to calculate the future boundary value:
+save.boundary = save.boundary.values()
+
+#Pocock's design for Type II error
+ptm = proc.time()
+pocockreject1 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),0), mean.t =c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+pocockreject2 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),.333), mean.t = c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+pocockreject3 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),-.333), mean.t = c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+#### Pocock's design for Power
+ptm = proc.time()
+pocockpower1 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),0), mean.t = c(rep(0,3),0.333), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+pocockpower2 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),.333), mean.t = c(rep(0,3),0.333), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+pocockpower3 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),-.333), mean.t = c(rep(0,3),0.333)(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+### SPBD for type II error
+ptm = proc.time()
+spbdreject1 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),0), mean.t =c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "spbd",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+spbdreject2 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),.333), mean.t = c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "spbd",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+spbdreject3 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),-.333), mean.t = c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "spbd",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+### SPBD for power
+ptm = proc.time()
+spbdpower1 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),0), mean.t = c(rep(0,3),0.333), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "spbd",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+spbdpower2 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),.333), mean.t = c(rep(0,3),0.333), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "spbd",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+spbdpower3 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),-.333), mean.t = c(rep(0,3),0.333)(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "spbd",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
 

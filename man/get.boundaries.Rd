@@ -4,7 +4,7 @@
 \alias{get.boundaries}
 \title{Function to create the boudnaries that satisfy the spending function}
 \usage{
-get.boundaries(n.looks = 2, v, k = c(2, 1), alpha.star.u = c(0,
+get.boundaries(n.looks = 2, v, k = c(3, 1), alpha.star.u = c(0,
   0.025), alpha.star.l = c(0, 0.975))
 }
 \arguments{

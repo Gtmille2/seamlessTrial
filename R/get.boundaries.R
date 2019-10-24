@@ -8,7 +8,7 @@
 #' @export
 
 
-get.boundaries <- function(n.looks=2, v, k=c(2,1), alpha.star.u=c(0,0.025), alpha.star.l=c(0,0.975))
+get.boundaries <- function(n.looks=2, v, k=c(3,1), alpha.star.u=c(0,0.025), alpha.star.l=c(0,0.975))
 {
 
   inc.v = get.increments(v)
