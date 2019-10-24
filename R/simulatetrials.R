@@ -16,8 +16,12 @@
 #' @param tau1 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @param tau2 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @export
-simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.0, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
+simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
 {
+  data = NULL
+  z.v = NULL
+  treat = NULL
+  covValues = NULL
   n.looks = 2 #There are 2 planned analyses in this trial
   alpha.star.u <<- c(0.0,0.025)
   alpha.star.l <<- c(0,0.975)
@@ -40,7 +44,7 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
   z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
   z = z.v[1:look,1]
   v = z.v[1:look,2]
-  # z.v
+  z.v
   best = z.v[1,3] #The best treatment was found in this function
   # boundaries = get.boundaries(n.looks = look,v = v, k = c(n.trt,rep(1,look-1)), alpha.star.u, alpha.star.l) # Getting stopping boundaries at this point
 
@@ -48,7 +52,7 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
   look = 2
   covValuesNew = genCovValues(p=c(0.5,0.5),N=N-N1)
   covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
-  if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt) # Assigning new treatment values
+  if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=best, tr = treat, n.trt = n.trt) # Assigning new treatment values
   # print(TRUE)
   data = simulatedata.car(mean.s=rep(0,n.trt+1),rep(0,n.trt+1),sigma = 1,sigma0=1,rho = 0.5, tau1 = 1,tau2 = 1,treat,covValues,data,inspection = look) #Simulating the new patients data
 

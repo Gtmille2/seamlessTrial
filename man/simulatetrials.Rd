@@ -6,7 +6,7 @@
 \usage{
 simulatetrials(N1 = 200, N = 500, n.trt = 3, mean.s = NULL,
   mean.t = NULL, p1 = 0.5, p2 = 0.5, sigma0 = 1, sigma = 1,
-  rho = 0, nsim = 1000, design = "Pocock", tau1 = 1, tau2 = 1)
+  rho = 0.5, nsim = 1000, design = "Pocock", tau1 = 1, tau2 = 1)
 }
 \arguments{
 \item{N1}{Number of patients with secondary endpoint available at first analysis}

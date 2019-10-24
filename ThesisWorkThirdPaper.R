@@ -13,7 +13,7 @@ sigma = 1
 rho = 0.5
 trialprogress = seq(1,n.looks)/n.looks
 #Generating sample covariate values
-simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=rep(0,n.trt+1), mean.t=rep(0,n.trt+1), p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.0, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
+simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=rep(0,n.trt+1), mean.t=rep(0,n.trt+1), p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
 {
 
   selected=rep(0,nsim)
@@ -83,6 +83,9 @@ reject = simulatetrials(N1 = 300, N = 500, n.trt = n.trt, mean.s = rep(0,n.trt+1
 allsims = cbind(allsims, reject)
 proc.time() - ptm
 ###Under alternative hypothesis that at least 1 treatment is not equal to zero
-reject = simulatetrials(N1 = 200, N = 500, n.trt = n.trt, mean.s = rep(0,(n.trt+1)), mean.t = rep(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "SPBD", tau1= 1,tau2 = 1)
+ptm = proc.time()
+reject = simulatetrials(N1 = 200, N = 500, n.trt = n.trt, mean.s = rep(0,(n.trt+1)), mean.t = rep(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 100, design = "SPBD", tau1= 1,tau2 = 1)
+proc.time() - ptm
+
 reject = simulatetrials(N1 = 300, N = 500, n.trt = n.trt, mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "SPBD", tau1= 1,tau2 = 1)
 
