@@ -162,13 +162,13 @@ nocar = function(covValues, best = 0, tr = NULL, n.trt) {
   if (is.null(tr)) tr=rep(NA,N) else tr = tr[keeps]
   # out = list()
   # trin = which(trts==trts)
-  delts = rep(0,(n.trt))
+  N = length(tr)
   while(s<=N)
   {
-    tr[s] = sample(trts, 1,1/(length(trts)), replace=TRUE)
+    tr[s] = sample(trts, 1,rep(1/(length(trts)),n.trt), replace=TRUE)
     s=s+1
   }
-
+  tr = na.omit(tr)
 
   tr
-}
+ }

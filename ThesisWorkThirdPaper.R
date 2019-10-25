@@ -132,3 +132,22 @@ ptm = proc.time()
 spbdpower3 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),-.333), mean.t = c(rep(0,3),0.333)(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "spbd",tau1= 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
 
+####No CAR
+ptm = proc.time()
+nocarreject1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+nocarreject2 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0.333),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+nocarreject3 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),-0.333),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+nocarpower1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = c(rep(0,3),0.333), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+nocarpower2 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0.333),mean.t = c(rep(0,3),0.333), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
+ptm = proc.time()
+nocarpower3 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),-0.333),mean.t = c(rep(0,3),0.333), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+proc.time() - ptm
