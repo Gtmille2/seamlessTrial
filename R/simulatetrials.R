@@ -38,7 +38,7 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
   if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt)
   # table(treat)
   #Simulating data for these treatment assignments
-  data = simulatedata.car(mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), sigma = 1, sigma0 = 1, rho = 0.5, tau1 = 1, tau2 = 1, treat, covValues,inspection = look)
+  data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat, covValues,inspection = look)
 
   #Calculating test statistics z & v for this data, and selecting the best treatment
   z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
@@ -54,7 +54,7 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
   covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
   if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=best, tr = treat, n.trt = n.trt) # Assigning new treatment values
   # print(TRUE)
-  data = simulatedata.car(mean.s=rep(0,n.trt+1),rep(0,n.trt+1),sigma = 1,sigma0=1,rho = 0.5, tau1 = 1,tau2 = 1,treat,covValues,data,inspection = look) #Simulating the new patients data
+  data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
 
   #Calculating test statistics z & v for this data at the second look.
   z.v = get.z.v.Current(data,n.looks,look,z.v)
@@ -115,7 +115,7 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5
     if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt)
     # table(treat)
     #Simulating data for these treatment assignments
-    data = simulatedata.car(mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), sigma = 1, sigma0 = 1, rho = 0.5, tau1 = 1, tau2 = 1, treat, covValues,inspection = look)
+    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat, covValues,inspection = look)
 
     #Calculating test statistics z & v for this data, and selecting the best treatment
     z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
@@ -124,11 +124,11 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5
     z = z.v[1:look,1]
     v = z.v[1:look,2]
     look = 2
-    covValuesNew = genCovValues(p=c(0.5,0.5),N=N-N1)
+    covValuesNew = genCovValues(p=c(p1,p2),N=N-N1)
     covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
     if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=best, tr = treat, n.trt = n.trt) # Assigning new treatment values
     # print(TRUE)
-    data = simulatedata.car(mean.s=rep(0,n.trt+1),rep(0,n.trt+1),sigma = 1,sigma0=1,rho = 0.5, tau1 = 1,tau2 = 1,treat,covValues,data,inspection = look) #Simulating the new patients data
+    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
 
     #Calculating test statistics z & v for this data at the second look.
     z.v = get.z.v.Current(data,n.looks,look,z.v)
@@ -193,7 +193,7 @@ simulateNoCar = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
     treat = nocar(covValues = covValues, best =  0 , tr = NULL, n.trt = n.trt)
     # table(treat)
     #Simulating data for these treatment assignments
-    data = simulatedata.car(mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), sigma = 1, sigma0 = 1, rho = 0.5, tau1 = 1, tau2 = 1, treat, covValues,inspection = look)
+    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
 
     #Calculating test statistics z & v for this data, and selecting the best treatment
     z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
@@ -202,11 +202,11 @@ simulateNoCar = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
     z = z.v[1:look,1]
     v = z.v[1:look,2]
     look = 2
-    covValuesNew = genCovValues(p=c(0.5,0.5),N=N-N1)
+    covValuesNew = genCovValues(p=c(p1,p2),N=N-N1)
     covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
     treat = nocar(covValues = covValues, best =  best , tr = treat, n.trt = 1)
     # print(TRUE)
-    data = simulatedata.car(mean.s=rep(0,n.trt+1),rep(0,n.trt+1),sigma = 1,sigma0=1,rho = 0.5, tau1 = 1,tau2 = 1,treat,covValues,data,inspection = look) #Simulating the new patients data
+    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
 
     #Calculating test statistics z & v for this data at the second look.
     z.v = get.z.v.Current(data,n.looks,look,z.v)

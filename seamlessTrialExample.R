@@ -5,7 +5,7 @@
 library(seamlessTrials)
 set.seed(101010)
 
-n.looks = 3 #There are 5 planned analyses in this trial
+n.looks = 5 #There are 5 planned analyses in this trial
 trialprogress = seq(1,n.looks)/n.looks
 
 alpha.star.u=c(0.001,0.010,0.019,0.024,0.025) # Upper alpha levels based on spending function
