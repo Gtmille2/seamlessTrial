@@ -4,8 +4,8 @@
 \alias{simold}
 \title{Simulate Data For CAR after first look}
 \usage{
-simold(mean.s, mean.t, sigma0 = 1, sigma = 1, rho = 0.5, tau1 = 1,
-  tau2 = 1, treat, covValues, data, inspection)
+simold(mean.s, mean.t, sigma0, sigma, rho, tau1, tau2, treat, covValues,
+  data, inspection)
 }
 \arguments{
 \item{mean.s}{Mean of the short term response}

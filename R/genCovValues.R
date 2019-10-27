@@ -11,6 +11,6 @@
 genCovValues = function(p = c(0.5,0.5), N = 200) {
   full = NULL
   for (i in 1:length(p)) full = cbind(full,sample(2,N,p[i]))
-  full
+  ifelse(full==max(full),yes = 1,no = 0)
   # matrix(c(z1,z2),ncol=2)
 }

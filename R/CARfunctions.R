@@ -13,18 +13,24 @@
 
 psd=function(x,p1=3/4,best = 0,tr = NULL,n.trt)
 {
-  if (best == 0) trts = seq(0,n.trt) else trts = c(0,best)
+  if (best == 0) trts = seq(0,n.trt) else trts = unique(c(0,best))
   if (is.null(tr)) keeps = rep(TRUE,nrow(x)) else keeps = c(tr %in% trts,rep(TRUE,nrow(x)-length(tr)))
   if (is.null(tr)) arrival = as.matrix(ade4::acm.disjonctif(x)) else arrival = as.matrix(ade4::acm.disjonctif(x[keeps,]))
   # arrival = as.matrix(ade4::acm.disjonctif(x))
+  # test1 = ifelse(x==max(x), 0,1)
+  # test2 = x-1
+  # test3 = apply(test1, 1, function(j) sum(j*2^(rev(seq_along(j))-1)))+1
+  # test4 =  apply(test2, 1, function(j) sum(j*2^(rev(seq_along(j))-1)))+1
   weight = rep(1,ncol(arrival))
   s = length(tr[tr %in% trts]) + 1
   n.trt = length(trts)
   N = nrow(arrival)
+  # test = apply(test,1 ,function(x) sum(x * 2^(rev(seq_along(x))-1)))+1
   base = matrix(rep(0,n.trt*ncol(arrival)),ncol=ncol(arrival))
+  # base2 = matrix(rep(0,n.trt),ncol=1)
   for ( i in 1:length(trts)) base[i,] = colSums(arrival[which(tr[tr %in% trts]==trts[i]),])
   if (is.null(tr)) tr=rep(NA,N) else tr = tr[keeps]
-  out = list()
+  # out = list()
   # trin = which(trts==trts)
   delts = rep(0,(n.trt))
   while(s<=N)
@@ -85,19 +91,22 @@ spbd=function(covValues,m=4, best = 0, tr = NULL, n.trt)
   s = length(tr) + 1
   z1 = covValues[,1]-1
   z2 = covValues[,2]-1
-  n = length(z1)
-  x=NULL  #covaiate info used for function spbd, values from 1 to 4
+  # covValues = covValues - 1
+  flip = ifelse(covValues == max(covValues),0,1)
+  x = apply(flip,1 ,function(x) sum(x * 2^(rev(seq_along(x))-1)))+1
+  n = nrow(flip)
+  # x=NULL  #covaiate info used for function spbd, values from 1 to 4
   #think I want this to be 100, 130-30
-  while(s<=n)
-  {
-    if(z1[s]==1 & z2[s]==1) x[s]=1 else
-      if(z1[s]==1 & z2[s]==0) x[s]=2 else
-        if(z1[s]==0 & z2[s]==1) x[s]=3 else
-          if(z1[s]==0 & z2[s]==0) x[s]=4
-
-          s=s+1
-  }
-  x = na.omit(x)
+  # while(s<=n)
+  # {
+  #   if(z1[s]==1 & z2[s]==1) x[s]=1 else
+  #     if(z1[s]==1 & z2[s]==0) x[s]=2 else
+  #       if(z1[s]==0 & z2[s]==1) x[s]=3 else
+  #         if(z1[s]==0 & z2[s]==0) x[s]=4
+  #
+  #         s=s+1
+  # }
+  x = x[s:n]
   trkeeps = tr[tr %in% trts]
   i = 1
   tr=NULL
@@ -162,6 +171,8 @@ nocar = function(covValues, best = 0, tr = NULL, n.trt) {
   if (is.null(tr)) tr=rep(NA,N) else tr = tr[keeps]
   # out = list()
   # trin = which(trts==trts)
+
+  lapply(covValues, function(x) sum(x * 2^(rev(seq_along(x))-1)))
   N = length(tr)
   while(s<=N)
   {
@@ -172,3 +183,6 @@ nocar = function(covValues, best = 0, tr = NULL, n.trt) {
 
   tr
  }
+getdelts = function(n.trt, inc, arrivalrow){
+
+}

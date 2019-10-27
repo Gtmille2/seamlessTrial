@@ -90,7 +90,7 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
 #' @param tau1 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @param tau2 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @export
-simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1,save.boundary)
+simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL,p1, p2 , sigma0, sigma, rho, nsim, design = "Pocock",tau1,tau2,save.boundary)
 {
 
 
@@ -113,7 +113,7 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5
     covValues = genCovValues(p = c(p1,p2),N=N1)
     #Getting treatment value assignments
     if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt)
-    # table(treat)
+    table(treat)
     #Simulating data for these treatment assignments
     data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat, covValues,inspection = look)
 
@@ -136,8 +136,8 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5
     v = z.v[1:look,2] # Retrieving the V statistic
 
     t1percent = min(99,round(100*v[1]/v[2]))
-    boundary.value = sqrt(v[look])*save.boundary[t1percent]
-    if (z[look] > boundary.value) reject[sim] = 1
+    boundary.value = sqrt(v[2])*save.boundary[t1percent]
+    if (z[2] > boundary.value) reject[sim] = 1
       # # using short-term and long-term endpoints
       # z.v = get.z.v(data,n1,N1,N)
       # print(z.v)
@@ -193,7 +193,7 @@ simulateNoCar = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
     treat = nocar(covValues = covValues, best =  0 , tr = NULL, n.trt = n.trt)
     # table(treat)
     #Simulating data for these treatment assignments
-    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
+    data = simulatedata.nocar(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
 
     #Calculating test statistics z & v for this data, and selecting the best treatment
     z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
@@ -206,7 +206,7 @@ simulateNoCar = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
     covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
     treat = nocar(covValues = covValues, best =  best , tr = treat, n.trt = 1)
     # print(TRUE)
-    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
+    data = simulatedata.nocar(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
 
     #Calculating test statistics z & v for this data at the second look.
     z.v = get.z.v.Current(data,n.looks,look,z.v)
