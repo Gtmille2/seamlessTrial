@@ -172,7 +172,7 @@ nocar = function(covValues, best = 0, tr = NULL, n.trt) {
   # out = list()
   # trin = which(trts==trts)
 
-  lapply(covValues, function(x) sum(x * 2^(rev(seq_along(x))-1)))
+  # lapply(covValues, function(x) sum(x * 2^(rev(seq_along(x))-1)))
   N = length(tr)
   while(s<=N)
   {

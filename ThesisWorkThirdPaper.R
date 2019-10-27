@@ -6,6 +6,16 @@ library(seamlessTrials)
 save.boundary = save.boundary.values()
 n.trt = 3
 nsim = 100
+N1 = 250
+N=500
+sigma0 = 0
+sigma = 1
+p1 = .5
+p2 = .5
+rho = 0.5
+tau1 = 1
+tau2 = 1
+
 allsims = NULL
 ###Under null hypothesis that all treatment effects are equal
 ptm = proc.time()
