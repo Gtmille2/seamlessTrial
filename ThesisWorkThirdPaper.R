@@ -8,7 +8,7 @@ n.trt = 3
 nsim = 100
 N1 = 250
 N=500
-sigma0 = 0
+sigma0 = 1
 sigma = 1
 p1 = .5
 p2 = .5
@@ -80,7 +80,7 @@ proc.time() - ptm
 
 ####No CAR
 ptm = proc.time()
-nocarreject1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = rep(0,n.trt+1), p1 = .7, p2 =.7,sigma0 = 1,sigma = 1,rho = .5,nsim = 1000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+nocarreject1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = 0,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
 ptm = proc.time()
 nocarreject2 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0.333),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)

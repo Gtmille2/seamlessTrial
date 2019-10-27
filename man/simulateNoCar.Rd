@@ -4,7 +4,7 @@
 \alias{simulateNoCar}
 \title{Simualte for no CAR}
 \usage{
-simulateNoCar(N1 = 200, N = 500, n.trt = 3, mean.s = NULL,
+simulateNoCar(N1 = 250, N = 500, n.trt = 3, mean.s = NULL,
   mean.t = NULL, p1 = 0.5, p2 = 0.5, sigma0 = 1, sigma = 1,
   rho = 0.5, nsim = 10000, tau1 = 1, tau2 = 1, save.boundary)
 }

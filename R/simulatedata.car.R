@@ -240,7 +240,7 @@ simnewnocar = function(mean.s,mean.t,sigma0,sigma,rho, tau1, tau2,treat,covValue
   # covsum = rowSums(matrix(c(tau1*covnew[,1],tau2*covnew[,2]),ncol=2))
   # covmatrix = cbind(covsum, covsum)
 
-  full.data  = full.error + mean.full
+  full.data  =  mean.full + full.error
   new.data = data.frame(s=full.data[,1],t=full.data[,2],treat=treat)
   test = new.data
   test

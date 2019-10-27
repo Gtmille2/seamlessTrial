@@ -18,6 +18,8 @@
 #' @export
 simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
 {
+  N1 = 250*4
+  N = N*4
   data = NULL
   z.v = NULL
   treat = NULL
@@ -92,7 +94,8 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
 #' @export
 simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL,p1, p2 , sigma0, sigma, rho, nsim, design = "Pocock",tau1,tau2,save.boundary)
 {
-
+  N1 = 250*4
+  N = N*4
 
   data = NULL
   z.v = NULL
@@ -168,10 +171,11 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL,p1, p2 ,
 #' @param tau1 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @param tau2 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @export
-simulateNoCar = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,save.boundary)
+simulateNoCar = function(N1=250, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,save.boundary)
 {
-
-
+  N1 = 250*4
+  N = N*4
+  set.seed(10101)
   data = NULL
   z.v = NULL
   treat = NULL
@@ -190,7 +194,7 @@ simulateNoCar = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
     look = 1
     covValues = genCovValues(p = c(p1,p2),N=N1)
     #Getting treatment value assignments
-    treat = nocar(covValues = covValues, best =  0 , tr = NULL, n.trt = n.trt)
+    treat = norandom(covValues = covValues, best =  0 , tr = NULL, n.trt = n.trt)
     # table(treat)
     #Simulating data for these treatment assignments
     data = simulatedata.nocar(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
@@ -204,7 +208,7 @@ simulateNoCar = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
     look = 2
     covValuesNew = genCovValues(p=c(p1,p2),N=N-N1)
     covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
-    treat = nocar(covValues = covValues, best =  best , tr = treat, n.trt = 1)
+    treat = norandom(covValues = covValues, best =  best , tr = treat, n.trt = 1)
     # print(TRUE)
     data = simulatedata.nocar(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
 

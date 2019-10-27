@@ -183,6 +183,32 @@ nocar = function(covValues, best = 0, tr = NULL, n.trt) {
 
   tr
  }
-getdelts = function(n.trt, inc, arrivalrow){
+
+#' No random Function
+#'
+#' This function is to allocate treatments equally
+#' @param covValues covValues is a matrix of covariate values, ranging from 0 to total number of factor levels
+#' @param best best is the best treatment after the first run
+#' @param tr Tr is vector of treatment assignments from the previous run if applicable
+#' @param n.trt n.trt is the number of treatments used in the analysis. Only applicable before the first analysis
+#' @export
+norandom = function(covValues, best = 0, tr = NULL, n.trt) {
+  if (best == 0) trts = seq(0,n.trt) else trts = c(0,best)
+  if (is.null(tr)) keeps = rep(TRUE,nrow(covValues)) else keeps = c(tr %in% trts,rep(TRUE,nrow(covValues)-length(tr)))
+  s = length(tr[tr %in% trts]) + 1
+  n.trt = length(trts)
+  N = nrow(covValues)
+  # base = matrix(rep(0,n.trt*ncol(arrival)),ncol=ncol(arrival))
+  # for ( i in 1:length(trts)) base[i,] = colSums(arrival[which(tr[tr %in% trts]==trts[i]),])
+  if (is.null(tr)) tr=rep(NA,N) else tr = tr[keeps]
+  N = length(tr)
+  # out = list()
+  # trin = which(trts==trts)
+
+  # lapply(covValues, function(x) sum(x * 2^(rev(seq_along(x))-1)))
+  tr[s:N] = rep(trts,(N-s+1)/n.trt)
+  tr = na.omit(tr)
+
+  tr
 
 }

@@ -14,6 +14,7 @@ get.z.v.Current <- function(data,n.looks,look,z.v.prev = NULL)
 
   n.trt = length(unique(data$treat))-1
   trts = unique(data$treat)
+  trts = trts[order(trts)]
   # keep = unique(c(0,trts[trts!=best]))
 
   z = rep(0,length(trts)-1)
@@ -41,10 +42,16 @@ get.z.v.Current <- function(data,n.looks,look,z.v.prev = NULL)
   # s.n1 = data$s[data$treat==0][1:n1]
   # for (treat in seq(1,n.trt)) s.n1 = c(s.n1,data$s[data$treat==treat][1:n1])
   #
-  s.n1 = na.omit(data)$s
+  # s.n1 = na.omit(data)$s
+  s.n1=NULL
+
+  for (treat in trts) s.n1 = c(s.n1,na.omit(data)$s[na.omit(data)$treat==treat])
+
   # t.n1 = data$t[data$treat==0][1:n1]
-  t.n1 = na.omit(data)$t
-  # for (treat in seq(1,n.trt)) t.n1 = c(t.n1,data$t[data$treat==treat][1:n1])
+  # t.n1 = na.omit(data)$t
+  t.n1=NULL
+
+  for (treat in trts) t.n1 = c(t.n1,na.omit(data)$t[na.omit(data)$treat==treat])
   treat.n1 = rep(trts,table(na.omit(data)$treat))
   reg2 = lm(t.n1~factor(treat.n1)+s.n1)
   beta.hat = reg2$coef[2:(n.trt+1)]
@@ -61,7 +68,7 @@ get.z.v.Current <- function(data,n.looks,look,z.v.prev = NULL)
   rho.hat = gamma.hat*sigma.0.hat/sigma.hat
 
 
-  expected.var.B.hat = 2*sigma.hat^2*( (1-rho.hat^2)/table(na.omit(data$treat))[1:n.trt] + rho.hat^2/table(data$treat)[1:n.trt])
+  expected.var.B.hat = 2*sigma.hat^2*( (1-rho.hat^2)/table(na.omit(data)$treat)[2:(n.trt+1)] + rho.hat^2/table(data$treat)[2:(n.trt+1)])
   z.v = rep(0,n.looks*n.trt*2)
   dim(z.v) <- c(n.trt,n.looks,2)
   z = B.hat/expected.var.B.hat
