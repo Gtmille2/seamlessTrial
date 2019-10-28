@@ -15,6 +15,8 @@ p2 = .5
 rho = 0.5
 tau1 = 1
 tau2 = 1
+mean.s = NULL
+mean.t = NULL
 
 allsims = NULL
 ###Under null hypothesis that all treatment effects are equal
@@ -36,9 +38,11 @@ proc.time() - ptm
 reject = simulatetrials(N1 = 300, N = 500, n.trt = n.trt, mean.s = rep(0,n.trt+1), mean.t = rep(0,n.trt+1), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "SPBD", tau1= 1,tau2 = 1)
 ###Using boundary.values to calculate the future boundary value:
 n.trt = 3
+
+
 #Pocock's design for Type II error
 ptm = proc.time()
-pocockreject1 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),0), mean.t =c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 100, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
+pocockreject1 = simulateest(N1 = 100, N = 200, n.trt = n.trt, mean.s = c(rep(0,3),0), mean.t =c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 100, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
 ptm = proc.time()
 pocockreject2 = simulateest(N1 = 250, N = 500, n.trt = n.trt, mean.s = c(rep(0,3),.333), mean.t = c(rep(0,3),0), p1 = .5,p2 = .5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000, design = "Pocock",tau1= 1,tau2 = 1,save.boundary = save.boundary)
@@ -80,7 +84,7 @@ proc.time() - ptm
 
 ####No CAR
 ptm = proc.time()
-nocarreject1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = 0,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+nocarreject1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = 0,nsim = 100,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
 ptm = proc.time()
 nocarreject2 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0.333),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)

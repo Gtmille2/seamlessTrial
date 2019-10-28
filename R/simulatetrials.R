@@ -18,8 +18,9 @@
 #' @export
 simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=1000, design = "Pocock",tau1 = 1,tau2 = 1)
 {
-  N1 = 250*4
-  N = N*4
+  Norig =N
+  N1orig = N1
+
   data = NULL
   z.v = NULL
   treat = NULL
@@ -32,40 +33,44 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
   selected=rep(0,nsim)
   reject = rep(0,nsim)
   trialprogress <<- seq(1,n.looks)/n.looks
-  for (sim in seq(1,nsim)) {
+  for (sim in seq(1,nsim))
+    {
+    N1 = N1orig*(n.trt+1)
+    N = Norig
+    look = 1
+    covValues = genCovValues(p = c(p1,p2),N=N1)
+    #Getting treatment value assignments
+    if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt)
+    # table(treat)
+    #Simulating data for these treatment assignments
+    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat, covValues,inspection = look)
 
-  look = 1
-  covValues = genCovValues(p = c(p1,p2),N=N1)
-  #Getting treatment value assignments
-  if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt)
-  # table(treat)
-  #Simulating data for these treatment assignments
-  data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat, covValues,inspection = look)
+    #Calculating test statistics z & v for this data, and selecting the best treatment
+    z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
+    z = z.v[1:look,1]
+    v = z.v[1:look,2]
+    z.v
+    best = z.v[1,3] #The best treatment was found in this function
+    # boundaries = get.boundaries(n.looks = look,v = v, k = c(n.trt,rep(1,look-1)), alpha.star.u, alpha.star.l) # Getting stopping boundaries at this point
 
-  #Calculating test statistics z & v for this data, and selecting the best treatment
-  z.v = get.z.v.Current(data,n.looks,look,z.v.prev=NULL)
-  z = z.v[1:look,1]
-  v = z.v[1:look,2]
-  z.v
-  best = z.v[1,3] #The best treatment was found in this function
-  # boundaries = get.boundaries(n.looks = look,v = v, k = c(n.trt,rep(1,look-1)), alpha.star.u, alpha.star.l) # Getting stopping boundaries at this point
+    #Generating new covariate values
+    look = 2
+    left = sum(data$treat %in% c(0,best))
+    N = N*2 - left
+    covValuesNew = genCovValues(p=c(0.5,0.5),N=N)
+    covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
+    if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=best, tr = treat, n.trt = n.trt) # Assigning new treatment values
+    # print(TRUE)
+    data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
 
-  #Generating new covariate values
-  look = 2
-  covValuesNew = genCovValues(p=c(0.5,0.5),N=N-N1)
-  covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
-  if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=best, tr = treat, n.trt = n.trt) # Assigning new treatment values
-  # print(TRUE)
-  data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2,treat,covValues,data,inspection = look) #Simulating the new patients data
+    #Calculating test statistics z & v for this data at the second look.
+    z.v = get.z.v.Current(data,n.looks,look,z.v)
+    z = z.v[1:look,1] # Retrieving the Z statistic
+    v = z.v[1:look,2] # Retrieving the V statistic
+    boundaries = get.boundaries(n.looks = look,v = v, k = c(n.trt,rep(1,look-1)),alpha.star.u = alpha.star.u, alpha.star.l = alpha.star.l) # Calculating stopping boundaries at this look
 
-  #Calculating test statistics z & v for this data at the second look.
-  z.v = get.z.v.Current(data,n.looks,look,z.v)
-  z = z.v[1:look,1] # Retrieving the Z statistic
-  v = z.v[1:look,2] # Retrieving the V statistic
-  boundaries = get.boundaries(n.looks = look,v = v, k = c(n.trt,rep(1,look-1)),alpha.star.u = alpha.star.u, alpha.star.l = alpha.star.l) # Calculating stopping boundaries at this look
-
-  selected[sim] = best
-  if (z.v$z[look] > boundaries$upper[look]) reject[sim] = 1
+    selected[sim] = best
+    if (z.v$z[look] > boundaries$upper[look]) reject[sim] = 1
 
 
   }
@@ -94,9 +99,8 @@ simulatetrials <- function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 
 #' @export
 simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL,p1, p2 , sigma0, sigma, rho, nsim, design = "Pocock",tau1,tau2,save.boundary)
 {
-  N1 = 250*4
-  N = N*4
-
+  Norig =N
+  N1orig = N1
   data = NULL
   z.v = NULL
   treat = NULL
@@ -111,6 +115,8 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL,p1, p2 ,
   trialprogress <<- seq(1,n.looks)/n.looks
   for (sim in seq(1,nsim))
   {
+    N1 = N1orig*(n.trt+1)
+    N = Norig
     # data = simulate.data(mean.s,mean.t,N,sigma0,sigma,rho)
     look = 1
     covValues = genCovValues(p = c(p1,p2),N=N1)
@@ -127,7 +133,9 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL,p1, p2 ,
     z = z.v[1:look,1]
     v = z.v[1:look,2]
     look = 2
-    covValuesNew = genCovValues(p=c(p1,p2),N=N-N1)
+    left = sum(data$treat %in% c(0,best))
+    N = N*2 - left
+    covValuesNew = genCovValues(p=c(p1,p2),N=N)
     covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
     if (design == "Pocock" ) treat = psd(covValues,p1=3/4,best = best,tr = treat, n.trt = 1) else treat = spbd(covValues = covValues, m = 4, best=best, tr = treat, n.trt = n.trt) # Assigning new treatment values
     # print(TRUE)
@@ -173,8 +181,9 @@ simulateest = function(N1=200, N=500, n.trt=3, mean.s=NULL, mean.t=NULL,p1, p2 ,
 #' @export
 simulateNoCar = function(N1=250, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,save.boundary)
 {
-  N1 = 250*4
-  N = N*4
+  Norig =N
+  N1orig = N1
+
   set.seed(10101)
   data = NULL
   z.v = NULL
@@ -190,6 +199,8 @@ simulateNoCar = function(N1=250, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
   trialprogress <<- seq(1,n.looks)/n.looks
   for (sim in seq(1,nsim))
   {
+    N1 = N1orig*(n.trt+1)
+    N = Norig
     # data = simulate.data(mean.s,mean.t,N,sigma0,sigma,rho)
     look = 1
     covValues = genCovValues(p = c(p1,p2),N=N1)
@@ -206,7 +217,9 @@ simulateNoCar = function(N1=250, N=500, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = 
     z = z.v[1:look,1]
     v = z.v[1:look,2]
     look = 2
-    covValuesNew = genCovValues(p=c(p1,p2),N=N-N1)
+    left = sum(data$treat %in% c(0,best))
+    N = N*2 - left
+    covValuesNew = genCovValues(p=c(p1,p2),N=N)
     covValues = rbind(covValues, covValuesNew) # Combining new covariate values with old covariate values
     treat = norandom(covValues = covValues, best =  best , tr = treat, n.trt = 1)
     # print(TRUE)
