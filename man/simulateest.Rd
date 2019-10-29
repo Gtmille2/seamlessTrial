@@ -4,7 +4,7 @@
 \alias{simulateest}
 \title{Testing other simulate trials function}
 \usage{
-simulateest(N1 = 200, N = 500, n.trt = 3, mean.s = NULL,
+simulateest(n1 = 20, N1 = 100, N = 200, n.trt = 3, mean.s = NULL,
   mean.t = NULL, p1, p2, sigma0, sigma, rho, nsim, design = "Pocock",
   tau1, tau2, save.boundary)
 }

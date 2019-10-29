@@ -86,6 +86,7 @@ simnew = function(mean.s,mean.t,sigma0,sigma,rho, tau1, tau2,treat,covValues,dat
   # update.error = NULL
   covsum = rowSums(matrix(c(tau1*covnew[,1],tau2*covnew[,2]),ncol=2))
   covmatrix = cbind(covsum, covsum)
+  # full.data  = full.error + mean.full
 
   full.data  = full.error + mean.full + covmatrix
   new.data = data.frame(s=full.data[,1],t=full.data[,2],treat=treat)
@@ -161,12 +162,15 @@ simold = function(mean.s,mean.t,sigma0,sigma,rho, tau1, tau2,treat,covValues,dat
   updatecovsum = rowSums(matrix(c(tau1*oldcov[,1],tau2*oldcov[,2]),ncol=2))
   updatecovmat = cbind(updatecovsum, updatecovsum)
   updatedata = update.error + mean.new.t + updatecovmat
+  # updatedata = update.error + mean.new.t
+
   olds = keepdata[is.na(keepdata$t),]$s
   updatedata = data.frame(s = olds, t = updatedata[,2],treat=oldtreat)
   olddata = na.omit(keepdata)
   updatefull = rbind(olddata, updatedata)
+  # full.data  = full.error + mean.full
 
-  full.data  = full.error + mean.full + covmatrix
+  full.data  = full.error + mean.full  + covmatrix
   new.data = data.frame(s=full.data[,1],t=full.data[,2],treat=treat)
   test = rbind(updatefull,new.data)
   test
@@ -233,9 +237,13 @@ simnewnocar = function(mean.s,mean.t,sigma0,sigma,rho, tau1, tau2,treat,covValue
   # update.full = cbind(mean.new.t, rep(0,length(mean.new.t)))
   # simulate error about mean zero then add on treatment effects
   mean = c(0,0)
+  # set.seed(101)
+
   var = c(sigma0^2,rho*sigma0*sigma,rho*sigma0*sigma,sigma^2)
   dim(var) = c(2,2)
   full.error = mvtnorm::rmvnorm(nrow(mean.full),mean,var)
+  # full.error = mvtnorm::rmvnorm(100,mean,var)
+
   # update.error = NULL
   # covsum = rowSums(matrix(c(tau1*covnew[,1],tau2*covnew[,2]),ncol=2))
   # covmatrix = cbind(covsum, covsum)
@@ -307,6 +315,7 @@ simoldnocar = function(mean.s,mean.t,sigma0,sigma,rho, tau1, tau2,treat,covValue
   mean = c(0,0)
   var = c(sigma0^2,rho*sigma0*sigma,rho*sigma0*sigma,sigma^2)
   dim(var) = c(2,2)
+  # set.seed(101)
   full.error = mvtnorm::rmvnorm(nrow(mean.full),mean,var)
   update.error = mvtnorm::rmvnorm(nrow(update.full),mean,var)
 

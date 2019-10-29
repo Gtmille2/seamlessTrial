@@ -5,9 +5,10 @@ library(seamlessTrials)
 #Running multiple simulations:
 save.boundary = save.boundary.values()
 n.trt = 3
-nsim = 100
-N1 = 250
-N=500
+nsim = 1000
+n1 = 20
+N1 = 100
+N=200
 sigma0 = 1
 sigma = 1
 p1 = .5
@@ -17,7 +18,7 @@ tau1 = 1
 tau2 = 1
 mean.s = NULL
 mean.t = NULL
-
+set.seed(10101)
 allsims = NULL
 ###Under null hypothesis that all treatment effects are equal
 ptm = proc.time()
@@ -84,7 +85,7 @@ proc.time() - ptm
 
 ####No CAR
 ptm = proc.time()
-nocarreject1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = 0,nsim = 100,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+nocarreject1 = simulateNoCar(n1 = 20, N1 = 100,N = 200,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = 0,nsim = 1000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
 ptm = proc.time()
 nocarreject2 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0.333),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
@@ -93,7 +94,7 @@ ptm = proc.time()
 nocarreject3 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),-0.333),mean.t = rep(0,n.trt+1), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
 ptm = proc.time()
-nocarpower1 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = c(rep(0,3),0.333), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 1000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
+nocarpower1 = simulateNoCar(n1 = 20, N1 = 100,N = 200,n.trt = 3,mean.s  = c(rep(0,3),0),mean.t = c(rep(0,3),0.333), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = 0,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
 ptm = proc.time()
 nocarpower2 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),0.333),mean.t = c(rep(0,3),0.333), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
@@ -101,3 +102,6 @@ proc.time() - ptm
 ptm = proc.time()
 nocarpower3 = simulateNoCar(N1 = 250,N = 500,n.trt = 3,mean.s  = c(rep(0,3),-0.333),mean.t = c(rep(0,3),0.333), p1 = .5, p2 =.5,sigma0 = 1,sigma = 1,rho = .5,nsim = 10000,tau1 = 1,tau2 = 1,save.boundary = save.boundary)
 proc.time() - ptm
+
+nocarpower1 = simNoCarOrig(n1=20, N1= 100, N=200, n.trt =3, mean.s=rep(0,n.trt+1), mean.t = c(rep(0,3), 0.3333), p1 = .5, p2=.5, sigma0 = 1, sigma = 1, rho = 0.5, nsim = 1000, tau1 = 1, tau2 = 1, save.boundary = save.boundary)
+pocockpower1 = simCarOrig(n1= 20, N1= 100, N =200, n.trt = 3, mean.s = rep(0,n.trt+1), mean.t = c(rep(0,3), 0.3333), p1 = .5, p2 = 5, sigma0 = 1, sigma = 1, rho = .5, nsim = 1000, tau1 = 1, tau2 = 1, save.boundary = save.boundary, design = "Pocock")

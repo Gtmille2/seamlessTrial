@@ -206,7 +206,8 @@ norandom = function(covValues, best = 0, tr = NULL, n.trt) {
   # trin = which(trts==trts)
 
   # lapply(covValues, function(x) sum(x * 2^(rev(seq_along(x))-1)))
-  tr[s:N] = rep(trts,(N-s+1)/n.trt)
+  # tr[s:N] = rep(trts,(N-s+1)/n.trt)
+  tr[s:N] = rep(trts,rep((N-s+1)/n.trt,n.trt))
   tr = na.omit(tr)
 
   tr
