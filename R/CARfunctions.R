@@ -79,10 +79,11 @@ g=function(x,p1=3/4,n.trt)
 #' @param n Total sample size
 #' @param m M is the level of discretization
 #' @param n.trt n.trt is the number of treatments in the trial
+#' @param block.size The block size used in the SPBD function
 #' @export
 #' @examples
 #' spbd()
-spbd=function(covValues,m=4, best = 0, tr = NULL, n.trt)
+spbd=function(covValues,m=4, best = 0, tr = NULL, n.trt, block.size = 12)
 {
   if (best == 0) trts = seq(0,n.trt) else trts = c(0,best)
   if (is.null(tr)) keeps = rep(TRUE,nrow(covValues)) else keeps = c(tr %in% trts,rep(TRUE,nrow(covValues)-length(tr)))
@@ -115,7 +116,7 @@ spbd=function(covValues,m=4, best = 0, tr = NULL, n.trt)
     # print(i)
     # print(length(x[x==i]))
 
-    tr[x==i]=pbr(length(x[x==i]),n.trt = n.trt,trts=trts)
+    tr[x==i]=pbr(length(x[x==i]),n.trt = n.trt,trts=trts, block.size = block.size)
     # print(tr)
     i=i+1
   }

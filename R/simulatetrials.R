@@ -331,7 +331,7 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
 #' @param tau1 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @param tau2 The chosen covariate adaptive randomization procedure. Default is Pocock's design
 #' @export
-simCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,design = "Pocock",save.boundary)
+ simCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,design = "Pocock",save.boundary, block.size = 12)
 {
 
   Norig =N
@@ -355,7 +355,7 @@ simCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL, 
     look = 1
     covValues = genCovValues(p = c(p1,p2),N=N*(n.trt+1))
     #Getting treatment value assignments
-    if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt)
+    if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt, block.size = block.size)
 
     # treat = norandom(covValues = covValues, best =  0 , tr = NULL, n.trt = n.trt)
     #Simulating data for these treatment assignments
@@ -377,3 +377,179 @@ simCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL, 
   }
   data.frame(power=sum(reject)/nsim,power3=sum(reject[selected==3])/nsim)
 }
+
+
+ #' Simualte for no CAR
+ #'
+ #' This function doesn't use an actual second point, just the projected based on the initial point
+ #' @param N1 Number of patients with secondary endpoint available at first analysis
+ #' @param N The total number of patients in the trial
+ #' @param n.trt The number of treatments in the trial
+ #' @param mean.s The mean for short term endpoint sample groups
+ #' @param mean.t Mean for the long term endpoint sample groups
+ #' @param p1 The covariate value for the first covariate
+ #' @param p2 THe covariate value for the second covariate
+ #' @param sigma0 sigma0 in the bivariate normal distribution
+ #' @param sigma is the known sigma for the population
+ #' @param rho is the known correlation between endpoints.
+ #' @param nsim The number of simulation runs. The default is 10000
+ #' @param tau1 The chosen covariate adaptive randomization procedure. Default is Pocock's design
+ #' @param tau2 The chosen covariate adaptive randomization procedure. Default is Pocock's design
+ #' @export
+ simCarOrigBS = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,design = "Pocock",save.boundary, block.size = 12)
+ {
+
+   Norig =N
+   N1orig = N1
+   data = NULL
+   z.v = NULL
+   treat = NULL
+   covValues = NULL
+   n.looks = 2 #There are 2 planned analyses in this trial
+   alpha.star.u <<- c(0.0,0.025)
+   alpha.star.l <<- c(0.0,0.975)
+   if (is.null(mean.s)) mean.s = rep(0,n.trt+1)
+   if (is.null(mean.t)) mean.t = rep(0,n.trt+1)
+   selected=rep(0,nsim)
+   reject = rep(0,nsim)
+   trialprogress <<- c(1, 1)
+   for (sim in seq(1,nsim))
+   {
+     N1 = N1orig
+     N = Norig
+     look = 1
+     covValues = genCovValues(p = c(p1,p2),N=N*(n.trt+1))
+     #Getting treatment value assignments
+     if (design == "Pocock" ) treat = psd(covValues, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValues, m = 4, best=0, tr = NULL, n.trt = n.trt, block.size = block.size)
+
+     # treat = norandom(covValues = covValues, best =  0 , tr = NULL, n.trt = n.trt)
+     #Simulating data for these treatment assignments
+     # set.seed(101)
+     data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
+     z1.bs = rep(0,200)
+     v1.bs = rep(0,200)
+     z2.bs = rep(0,200)
+     v2.bs = rep(0,200)
+     for ( i in 1:200) {
+       bs.s1 = sample(nrow(data), nrow(data), replace = TRUE)
+       databs = data[bs.s1,]
+       #Calculating test statistics z & v for this data, and selecting the best treatment
+       z.v = get.z.v.simulate(databs,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+       best = z.v[1,3] #The best treatment was found in this function
+       # selected[sim] = best
+
+       look = 2
+       z = z.v[1:look,1]
+       v = z.v[1:look,2]
+
+       z1.bs[i] = z[1]
+       v1.bs[i] = v[1]
+       z2.bs[i] = z[2]
+       v2.bs[i] = v[2]
+
+     }
+     z.v = get.z.v.simulate(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+     best = z.v[1,3] #The best treatment was found in this function
+     selected[sim] = best
+
+     look = 2
+     z = z.v[1:look,1]
+     v = z.v[1:look,2]
+     z2 = z[look]/sqrt(var(z2.bs))
+     v2 = v[look]/sqrt(var(v2.bs))
+     v1 = v[1]/sqrt(var(v1.bs))
+
+     t1percent = min(99,round(100*v1/v2))
+     boundary.value = sqrt(v2)*save.boundary[t1percent]
+     if (z2 > boundary.value) reject[sim] = 1
+
+   }
+   data.frame(power=sum(reject)/nsim,power3=sum(reject[selected==3])/nsim)
+ }
+
+ #' Simualte for no CAR
+ #'
+ #' This function doesn't use an actual second point, just the projected based on the initial point
+ #' @param N1 Number of patients with secondary endpoint available at first analysis
+ #' @param N The total number of patients in the trial
+ #' @param n.trt The number of treatments in the trial
+ #' @param mean.s The mean for short term endpoint sample groups
+ #' @param mean.t Mean for the long term endpoint sample groups
+ #' @param p1 The covariate value for the first covariate
+ #' @param p2 THe covariate value for the second covariate
+ #' @param sigma0 sigma0 in the bivariate normal distribution
+ #' @param sigma is the known sigma for the population
+ #' @param rho is the known correlation between endpoints.
+ #' @param nsim The number of simulation runs. The default is 10000
+ #' @param tau1 The chosen covariate adaptive randomization procedure. Default is Pocock's design
+ #' @param tau2 The chosen covariate adaptive randomization procedure. Default is Pocock's design
+ #' @export
+ simNoCarOrigBS = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,design = "Pocock",save.boundary, block.size = 12)
+ {
+
+   Norig =N
+   N1orig = N1
+   # set.seed(10101)
+   data = NULL
+   z.v = NULL
+   treat = NULL
+   covValues = NULL
+   n.looks = 2 #There are 2 planned analyses in this trial
+   alpha.star.u <<- c(0.0,0.025)
+   alpha.star.l <<- c(0.0,0.975)
+   if (is.null(mean.s)) mean.s = rep(0,n.trt+1)
+   if (is.null(mean.t)) mean.t = rep(0,n.trt+1)
+   selected=rep(0,nsim)
+   reject = rep(0,nsim)
+   trialprogress <<- c(1, 1)
+   for (sim in seq(1,nsim))
+   {
+     N1 = N1orig
+     N = Norig
+     look = 1
+     covValues = genCovValues(p = c(p1,p2),N=N*(n.trt+1))
+     #Getting treatment value assignments
+     treat = norandom(covValues = covValues, best =  0 , tr = NULL, n.trt = n.trt)
+     #Simulating data for these treatment assignments
+     # set.seed(101)
+     data = simulatedata.nocar(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
+     z1.bs = rep(0,200)
+     v1.bs = rep(0,200)
+     z2.bs = rep(0,200)
+     v2.bs = rep(0,200)
+     for ( i in 1:200) {
+       bs.s1 = sample(nrow(data), nrow(data), replace = TRUE)
+       databs = data[bs.s1,]
+       #Calculating test statistics z & v for this data, and selecting the best treatment
+       z.v = get.z.v.simulate(databs,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+       best = z.v[1,3] #The best treatment was found in this function
+       # selected[sim] = best
+
+       look = 2
+       z = z.v[1:look,1]
+       v = z.v[1:look,2]
+
+       z1.bs[i] = z[1]
+       v1.bs[i] = v[1]
+       z2.bs[i] = z[2]
+       v2.bs[i] = v[2]
+
+     }
+     z.v = get.z.v.simulate(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+     best = z.v[1,3] #The best treatment was found in this function
+     selected[sim] = best
+
+     look = 2
+     z = z.v[1:look,1]
+     v = z.v[1:look,2]
+     z2 = z[look]/sqrt(var(z2.bs))
+     v2 = v[look]/sqrt(var(v2.bs))
+     v1 = v[1]/sqrt(var(v1.bs))
+
+     t1percent = min(99,round(100*v1/v2))
+     boundary.value = sqrt(v2)*save.boundary[t1percent]
+     if (z2 > boundary.value) reject[sim] = 1
+
+   }
+   data.frame(power=sum(reject)/nsim,power3=sum(reject[selected==3])/nsim)
+ }

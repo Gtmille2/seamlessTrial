@@ -4,12 +4,14 @@
 \alias{spbd}
 \title{spbd Function}
 \usage{
-spbd(covValues, m = 4, best = 0, tr = NULL, n.trt)
+spbd(covValues, m = 4, best = 0, tr = NULL, n.trt, block.size = 12)
 }
 \arguments{
 \item{m}{M is the level of discretization}
 
 \item{n.trt}{n.trt is the number of treatments in the trial}
+
+\item{block.size}{The block size used in the SPBD function}
 
 \item{x}{X vector of covariate values, ranging from 0 to total number of factor levels}
 
