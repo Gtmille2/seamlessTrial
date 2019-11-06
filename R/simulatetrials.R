@@ -429,41 +429,46 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
      z1.bs = rep(0,200)
      v1.bs = rep(0,200)
      z2.bs = rep(0,200)
-     v2.bs = rep(0,200)
+     b1.bs = rep(0,200)
+     b2.bs = rep(0,200)
+
      for ( i in 1:200) {
-       bs.s1 = sample(nrow(data), nrow(data), replace = TRUE)
-       databs = data[bs.s1,]
+
+
+
+       bs.s1 = sample(nrow(covValues), nrow(covValues), replace = TRUE)
+       covValuesbs = covValues[bs.s1,]
+       if (design == "Pocock" ) treat = psd(covValuesbs, p1 = 3/4, best = 0, tr = NULL, n.trt = n.trt) else treat = spbd(covValues = covValuesbs, m = 4, best=0, tr = NULL, n.trt = n.trt, block.size = block.size)
        #Calculating test statistics z & v for this data, and selecting the best treatment
-       z.v = get.z.v.simulate(databs,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
-       best = z.v[1,3] #The best treatment was found in this function
-       # selected[sim] = best
-
-       look = 2
-       z = z.v[1:look,1]
-       v = z.v[1:look,2]
-
-       z1.bs[i] = z[1]
-       v1.bs[i] = v[1]
-       z2.bs[i] = z[2]
-       v2.bs[i] = v[2]
+       databs = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
+       b.s1 = get.z.v.bootstrap(databs,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+      b1.bs[i] = b.s1[best,2,3]
 
      }
-     z.v = get.z.v.simulate(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
-     best = z.v[1,3] #The best treatment was found in this function
+     z.v = get.z.v.bootstrap(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+     best = best #The best treatment was found in this function
      selected[sim] = best
 
      look = 2
-     z = z.v[1:look,1]
-     v = z.v[1:look,2]
-     z2 = z[look]/sqrt(var(z2.bs))
-     v2 = v[look]/sqrt(var(v2.bs))
-     v1 = v[1]/sqrt(var(v1.bs))
+     Bhat = z.v[best,look,3]
+
+     z2 = Bhat/var(b1.bs)
+     z.v
+     v2 = 1/var(b1.bs)
+     v1 = z.v[best,1,2]
+
+     # z = z.v[1:look,1]
+     # v = z.v[1:look,2]
+     # z2 = z[look]/sqrt(var(z2.bs))
+     # v2 = v[look]/sqrt(var(v2.bs))
+     # v1 = v[1]/sqrt(var(v1.bs))
 
      t1percent = min(99,round(100*v1/v2))
      boundary.value = sqrt(v2)*save.boundary[t1percent]
      if (z2 > boundary.value) reject[sim] = 1
 
    }
+   data.frame()
    data.frame(power=sum(reject)/nsim,power3=sum(reject[selected==3])/nsim)
  }
 

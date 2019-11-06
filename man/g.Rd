@@ -4,10 +4,10 @@
 \alias{g}
 \title{A function to calculate G in the Pocock Design and return a vector of p}
 \usage{
-g(x, p1 = 3/4, n.trt)
+g(delts, p1 = 3/4, n.trt)
 }
 \arguments{
-\item{x}{x is the vector of deltas in Pocock's design}
+\item{delts}{x is the vector of deltas in Pocock's design}
 
 \item{p1}{= 3/4}
 }
