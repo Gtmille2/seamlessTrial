@@ -4,7 +4,7 @@
 \alias{spbd}
 \title{spbd Function}
 \usage{
-spbd(covValues, m = 4, best = 0, tr = NULL, n.trt, block.size = 12)
+spbd(covValues, m = 4, best = 0, tr = NULL, n.trt, block.size = 20)
 }
 \arguments{
 \item{m}{M is the level of discretization}

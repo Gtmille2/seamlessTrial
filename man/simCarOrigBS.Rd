@@ -7,7 +7,7 @@
 simCarOrigBS(n1 = 20, N1 = 100, N = 200, n.trt = 3,
   mean.s = NULL, mean.t = NULL, p1 = 0.5, p2 = 0.5, sigma0 = 1,
   sigma = 1, rho = 0.5, nsim = 10000, tau1 = 1, tau2 = 1,
-  design = "Pocock", save.boundary, block.size = 12)
+  design = "Pocock", save.boundary, block.size = 20)
 }
 \arguments{
 \item{N1}{Number of patients with secondary endpoint available at first analysis}

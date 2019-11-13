@@ -83,7 +83,7 @@ g=function(delts,p1=3/4,n.trt)
 #' @export
 #' @examples
 #' spbd()
-spbd=function(covValues,m=4, best = 0, tr = NULL, n.trt, block.size = 12)
+spbd=function(covValues,m=4, best = 0, tr = NULL, n.trt, block.size = 20)
 {
   if (best == 0) trts = seq(0,n.trt) else trts = c(0,best)
   if (is.null(tr)) keeps = rep(TRUE,nrow(covValues)) else keeps = c(tr %in% trts,rep(TRUE,nrow(covValues)-length(tr)))
@@ -130,7 +130,7 @@ spbd=function(covValues,m=4, best = 0, tr = NULL, n.trt, block.size = 12)
 #' @param n Total n size
 #' @param block.size This is the number of subjects in each block, needs to be a multiple of the number of treatments
 #' @param n.trt is the number of treatments in the trial, including the control
-pbr=function(n,block.size=12,n.trt,trts) #block.size is the number of subjects in each block, assuming fixed
+pbr=function(n,block.size=20,n.trt,trts) #block.size is the number of subjects in each block, assuming fixed
 {
   # trts = trts[order(trts)]
   block.num=ceiling(n/block.size)
