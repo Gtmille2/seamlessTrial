@@ -56,19 +56,13 @@ simnew = function(mean.s,mean.t,sigma0,sigma,rho, tau1, tau2,treat,covValues,dat
   n.trt = length(unique(treat))-1
   n.s = table(treat)
   #Distributing the new available long-term endpoints between the previous group and the incoming group
-  # p = (length(treat) - sum(!is.na(data$t)))*(length(data$s)/length(treat)) # The number of patients from the old data that will have their long-term endpoint updated
-  # q = (length(treat) - sum(!is.na(data$t)))*(length(data$s)/length(treat)) # The number of patients from the new data that will have long-term endpoints
   n.t = round(n.s*(newupdate/sum(n.s)))
-  # n.update = table(data[keeps,]$treat) - table(na.omit(data[keeps,])$treat)
-  # n.update = round(n.update*(oldupdate/sum(n.update)))
+
   diff = n.s-n.t
   mean.full.s = rep(rep(0,n.trt+1),n.s)
   mean.full.t = rep(rep(0,n.trt+1),n.s)
   treat = tail(treat,sum(n.s))
-  # oldtreat = keepdata[is.na(keepdata$t),]$treat
-  # olddiff = table(oldtreat)-n.update
-  # if (sum(olddiff) < 0) olddiff[1:length(olddiff)] = 0
-  # mean.new.t = rep(0,length(oldtreat))
+
 
   for (trt in trts)
   {

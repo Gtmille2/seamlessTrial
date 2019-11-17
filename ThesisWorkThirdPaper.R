@@ -18,6 +18,7 @@ tau1 = 1
 tau2 = 1
 mean.s = NULL
 mean.t = NULL
+design = "SPBD"
 set.seed(10101)
 allsims = NULL
 ###Under null hypothesis that all treatment effects are equal
@@ -293,7 +294,7 @@ p2 = .5
 nsim = 100
 n.trt = 3
 rho = 0.5
-nsim = 100
+nsim = 10000
 
 pocockerror1bs = simCarOrigBS(n1=n1, N1 = N1, N = N, n.trt = 3, mean.s = c(rep(0,3), 0.0000), mean.t = c(rep(0,3), 0.0), p1 = p1, p2 = p2, sigma0 = 1, sigma = 1, rho = rho, nsim = nsim, tau1 = 1, tau2 = 1, save.boundary = save.boundary, design = "Pocock")
 pocockerror2bs = simCarOrigBS(n1=n1, N1 = N1, N = N, n.trt = 3, mean.s = c(rep(0,3), 0.3333), mean.t = c(rep(0,3), 0.0), p1 = p1, p2 = p2, sigma0 = 1, sigma = 1, rho = rho, nsim = nsim, tau1 = 1, tau2 = 1, save.boundary = save.boundary, design = "Pocock")
@@ -310,3 +311,8 @@ spbderror = cbind(spbderror1,spbderror2,spbderror3)
 nocarerror = cbind(nocarerror1,nocarerror2,nocarerror3)
 bs = rbind(spbderror, nocarerror)
 write.csv(bs, "C:/Users/garre/OneDrive/Documents/UTHealth Files/Thesis/sbpdbs20_100_200.csv")
+
+
+spbderror1bs =   simCarOrig(n1=n1, N1 = N1, N = N, n.trt = 3, mean.s = c(rep(0,3), 0.0000), mean.t = c(rep(0,3), 0.0), p1 = p1, p2 = p2, sigma0 = 1, sigma = 1, rho = rho, nsim = nsim, tau1 = 1, tau2 = 1, save.boundary = save.boundary, design = "spbd", block.size = 20)
+spbderror2bs =   simCarOrig(n1=n1, N1 = N1, N = N, n.trt = 3, mean.s = c(rep(0,3),-0.3333), mean.t = c(rep(0,3), 0.0), p1 = p1, p2 = p2, sigma0 = 1, sigma = 1, rho = rho, nsim = nsim, tau1 = 1, tau2 = 1, save.boundary = save.boundary, design = "spbd", block.size = 20)
+spbderror3bs =   simCarOrig(n1=n1, N1 = N1, N = N, n.trt = 3, mean.s = c(rep(0,3),0.3333), mean.t = c(rep(0,3), 0.0), p1 = p1, p2 = p2, sigma0 = 1, sigma = 1, rho = rho, nsim = nsim, tau1 = 1, tau2 = 1, save.boundary = save.boundary, design = "spbd", block.size = 20)

@@ -300,7 +300,6 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
     #Calculating test statistics z & v for this data, and selecting the best treatment
     z.v = get.z.v.simulate(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
     best = z.v[1,3] #The best treatment was found in this function
-    selected[sim] = best
 
     look = 2
     z = z.v[1:look,1]
@@ -363,16 +362,20 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
     data = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValues,inspection = look,data = NULL)
 
     #Calculating test statistics z & v for this data, and selecting the best treatment
-    z.v = get.z.v.simulate(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
-    best = z.v[1,3] #The best treatment was found in this function
+    z.v = get.z.v.simulate2(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+    best = seq(1,n.trt)[z.v[,2,1]!=0]
     selected[sim] = best
-
     look = 2
-    z = z.v[1:look,1]
-    v = z.v[1:look,2]
-    t1percent = min(99,round(100*v[1]/v[2]))
-    boundary.value = sqrt(v[look])*save.boundary[t1percent]
-    if (z[look] > boundary.value) reject[sim] = 1
+    Bhat = z.v[best,look,3]
+
+    # Test 1: Using the bootstrap variance for Z2, V1, and V2
+    v1 = z.v[best,1,2]
+    v2 = z.v[best,2,2]
+    z2 = z.v[best,2,1]
+
+    t1percent = min(99,round(100*v1/v2))
+    boundary.value = sqrt(v2)*save.boundary[t1percent]
+    if (z2 > boundary.value) reject[sim] = 1
 
   }
   data.frame(power=sum(reject)/nsim,power3=sum(reject[selected==3])/nsim)
@@ -399,7 +402,8 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
  simCarOrigBS = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL, p1 = .5, p2 = .5, sigma0=1, sigma=1, rho=0.5, nsim=10000,tau1 = 1,tau2 = 1,design = "Pocock",save.boundary, block.size = 20)
  {
 
-   Norig =N
+
+    Norig =N
    N1orig = N1
    data = NULL
    z.v = NULL
@@ -411,9 +415,12 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
    if (is.null(mean.s)) mean.s = rep(0,n.trt+1)
    if (is.null(mean.t)) mean.t = rep(0,n.trt+1)
    selected =rep(0,nsim)
+   reject = rep(0,nsim)
    rejectTest1 = rep(0,nsim)
    rejectTest2 = rep(0,nsim)
    rejectTest3 = rep(0,nsim)
+   rejectTest4 = rep(0,nsim)
+   rejectTest5 = rep(0,nsim)
 
    trialprogress <<- c(1, 1)
    for (sim in seq(1,nsim))
@@ -436,7 +443,7 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
      b2.bs = rep(0,200)
 
      for ( i in 1:200) {
-
+      N1 = N1orig
 
 
        bs.s1 = sample(nrow(covValues), nrow(covValues), replace = TRUE)
@@ -445,13 +452,13 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
        #Calculating test statistics z & v for this data, and selecting the best treatment
        databs = simulatedata.car(mean.s = mean.s, mean.t = mean.t, sigma = sigma, sigma0 = sigma0, rho = rho, tau1 = tau1, tau2 = tau2, treat=treat, covValues=covValuesbs,inspection = look,data = NULL)
        b.s1 = get.z.v.bootstrap(databs,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
-      b1.bs[i] = b.s1[best,1,3]
-      b2.bs[i] = b.s1[best,2,3]
+       bestcur = seq(1,n.trt)[b.s1[,2,1]!=0]
+       b1.bs[i] = b.s1[bestcur,1,3]
+      b2.bs[i] = b.s1[bestcur,2,3]
 
      }
-     z.v = get.z.v.bootstrap(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
-
-     best = best #The best treatment was found in this function
+     z.v = get.z.v.simulate2(data,n.looks,look,z.v.prev=NULL, n1 = n1,N1= N1, N = N)
+     best = seq(1,n.trt)[z.v[,2,1]!=0]
      selected[sim] = best
      look = 2
      Bhat = z.v[best,look,3]
@@ -459,7 +466,7 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
      # Test 1: Using the bootstrap variance for Z2, V1, and V2
      v1bootstrap = 1/var(b1.bs)
      v2bootstrap = 1/var(b2.bs)
-     z2bootstrap = Bhat/var(b2.bs)
+     z2bootstrap = Bhat/(var(b2.bs))
 
      t1percent = min(99,round(100*v1bootstrap/v2bootstrap))
      boundary.value = sqrt(v2bootstrap)*save.boundary[t1percent]
@@ -469,7 +476,7 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
      # Test 2: Using the bootstrap variance for Z2 only
      v2 = z.v[best, 2, 2]
      v1 = z.v[best, 1, 2]
-     z2bootstrap = Bhat/var(b2.bs)
+     z2bootstrap = Bhat/sqrt(var(b2.bs))
 
      t1percent = min(99,round(100*v1/v2))
      boundary.value = sqrt(v2)*save.boundary[t1percent]
@@ -484,11 +491,39 @@ simNoCarOrig = function(n1 = 20,N1=100, N=200, n.trt=3, mean.s=NULL, mean.t=NULL
      boundary.value = sqrt(v2bootstrap)*save.boundary[t1percent]
      if (z2bootstrap > boundary.value) rejectTest3[sim] = 1
 
+     #Test 4: Using square root of variance to calculate the statistic z2, v2, and v1
+     v1bootstrap = 1/sqrt(var(b1.bs))
+     v2bootstrap = 1/sqrt(var(b2.bs))
+     z2bootstrap = Bhat/sqrt(var(b2.bs))
+     t1percent = min(99,round(100*v1bootstrap/v2bootstrap))
+     boundary.value = sqrt(v2bootstrap)*save.boundary[t1percent]
+     if (z2bootstrap > boundary.value) rejectTest4[sim] = 1
 
+     #Test 5: Using square root of variance to calculate the statistic z2 only
+     v1bootstrap = 1/(var(b1.bs))
+     v2bootstrap = 1/(var(b2.bs))
+     z2bootstrap = Bhat/sqrt(var(b2.bs))
+     t1percent = min(99,round(100*v1bootstrap/v2bootstrap))
+     boundary.value = sqrt(v2bootstrap)*save.boundary[t1percent]
+     if (z2bootstrap > boundary.value) rejectTest5[sim] = 1
+
+     #Test6 Without boostrapping
+     v1 = z.v[best,1,2]
+     v2 = z.v[best,2,2]
+     z2 = z.v[best,2,1]
+
+     t1percent = min(99,round(100*v1/v2))
+     boundary.value = sqrt(v2)*save.boundary[t1percent]
+     if (z2 > boundary.value) reject[sim] = 1
    }
+   data.frame(rejectTest1 = rejectTest1,rejectTest2 = rejectTest2,rejectTest3 = rejectTest3,
+              rejectTest4 = rejectTest4, rejectTest5 = rejectTest5, selected = selected)
    data.frame(powerTest1=sum(rejectTest1)/nsim,power3Test1=sum(rejectTest1[selected==3])/nsim,
-              powerTest2=sum(rejectTest2)/nsim,power3Test2=sum(rejectTest2[selected==3])/nsim,
-              powerTest3=sum(rejectTest3)/nsim,power3Test3=sum(rejectTest3[selected==3])/nsim)
+          powerTest2=sum(rejectTest2)/nsim,power3Test2=sum(rejectTest2[selected==3])/nsim,
+          powerTest3=sum(rejectTest3)/nsim,power3Test3=sum(rejectTest3[selected==3])/nsim,
+          powerTest4=sum(rejectTest4)/nsim,power3Test4=sum(rejectTest4[selected==3])/nsim,
+          powerTest5=sum(rejectTest5)/nsim,power3Test5=sum(rejectTest5[selected==3])/nsim,
+          powerTest6=sum(reject)/nsim,power3Test6=sum(reject[selected==3])/nsim)
  }
 
  #' Simualte for no CAR
